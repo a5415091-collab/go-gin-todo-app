@@ -1,15 +1,29 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/a5415091-collab/go-gin-todo-app/handler" // ← ここを自分のモジュール名に変更
+)
 
 func main() {
 	r := gin.Default()
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
+	// 動作確認
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
 		})
 	})
+
+	// 認証系
+	r.POST("/signup", handler.Signup)
+	r.POST("/login", handler.Login)
+
+	// Todo系
+	r.GET("/todos", handler.GetTodos)
 
 	r.Run(":8080")
 }
