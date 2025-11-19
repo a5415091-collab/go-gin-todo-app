@@ -7,6 +7,7 @@ import (
 
 	"github.com/a5415091-collab/go-gin-todo-app/db"
 	"github.com/a5415091-collab/go-gin-todo-app/handler"
+	"github.com/a5415091-collab/go-gin-todo-app/middleware"
 	"github.com/a5415091-collab/go-gin-todo-app/repository"
 	"github.com/a5415091-collab/go-gin-todo-app/service"
 )
@@ -38,12 +39,15 @@ func main() {
 	r.POST("/signup", authHandler.Signup)
 	r.POST("/login", authHandler.Login)
 
-	// TODO系
-	r.GET("/todos", todoHandler.GetTodos)
-	r.GET("/todos/:id", todoHandler.GetTodo)
-	r.POST("/todos", todoHandler.CreateTodo)
-	r.PUT("/todos/:id", todoHandler.UpdateTodo)
-	r.DELETE("/todos/:id", todoHandler.DeleteTodo)
+	// TODO系（認証が必要なグループ）
+	authGroup := r.Group("/")
+	authGroup.Use(middleware.AuthMiddleware())
+
+	authGroup.GET("/todos", todoHandler.GetTodos)
+	authGroup.GET("/todos/:id", todoHandler.GetTodo)
+	authGroup.POST("/todos", todoHandler.CreateTodo)
+	authGroup.PUT("/todos/:id", todoHandler.UpdateTodo)
+	authGroup.DELETE("/todos/:id", todoHandler.DeleteTodo)
 
 	r.Run(":8080")
 

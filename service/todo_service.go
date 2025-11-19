@@ -8,11 +8,11 @@ import (
 )
 
 type TodoService interface {
-	FindAll() ([]model.Todo, error)
-	FindByID(id uint) (*model.Todo, error)
-	Create(title string, userID uint) error
-	Update(id uint, title string, done bool) error
-	Delete(id uint) error
+	FindAll(userID uint) ([]model.Todo, error)
+	FindByID(userID uint, id uint) (*model.Todo, error)
+	Create(userID uint, title string) (*model.Todo, error)
+	Update(userID uint, id uint, title string, done bool) (*model.Todo, error)
+	Delete(userID uint, id uint) error
 }
 
 type todoService struct {
@@ -23,14 +23,14 @@ func NewTodoService(todoRepo repository.TodoRepository) TodoService {
 	return &todoService{todoRepo}
 }
 
-// --- 既存の FindAll ---
-func (s *todoService) FindAll() ([]model.Todo, error) {
-	return s.todoRepo.FindAll()
+// --- FindAll ---
+func (s *todoService) FindAll(userID uint) ([]model.Todo, error) {
+	return s.todoRepo.FindAll(userID)
 }
 
 // --- FindByID ---
-func (s *todoService) FindByID(id uint) (*model.Todo, error) {
-	todo, err := s.todoRepo.FindByID(id)
+func (s *todoService) FindByID(userID uint, id uint) (*model.Todo, error) {
+	todo, err := s.todoRepo.FindByID(userID, id)
 	if err != nil {
 		return nil, errors.New("todo not found")
 	}
@@ -38,7 +38,7 @@ func (s *todoService) FindByID(id uint) (*model.Todo, error) {
 }
 
 // --- Create ---
-func (s *todoService) Create(title string, userID uint) error {
+func (s *todoService) Create(userID uint, title string) (*model.Todo, error) {
 	todo := &model.Todo{
 		Title:  title,
 		UserID: userID,
@@ -48,10 +48,10 @@ func (s *todoService) Create(title string, userID uint) error {
 }
 
 // --- Update ---
-func (s *todoService) Update(id uint, title string, done bool) error {
-	todo, err := s.todoRepo.FindByID(id)
+func (s *todoService) Update(userID uint, id uint, title string, done bool) (*model.Todo, error) {
+	todo, err := s.todoRepo.FindByID(userID, id)
 	if err != nil {
-		return errors.New("todo not found")
+		return nil, errors.New("todo not found")
 	}
 	todo.Title = title
 	todo.Done = done
@@ -59,6 +59,6 @@ func (s *todoService) Update(id uint, title string, done bool) error {
 }
 
 // --- Delete ---
-func (s *todoService) Delete(id uint) error {
-	return s.todoRepo.Delete(id)
+func (s *todoService) Delete(userID uint, id uint) error {
+	return s.todoRepo.Delete(userID, id)
 }

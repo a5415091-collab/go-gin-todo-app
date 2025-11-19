@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/a5415091-collab/go-gin-todo-app/jwt"
 	"github.com/a5415091-collab/go-gin-todo-app/service"
 	"github.com/gin-gonic/gin"
 )
@@ -50,14 +51,23 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	// 1. service.Login で認証
 	user, err := h.authService.Login(req.Email, req.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
 		return
 	}
 
+	// 2. JWT の発行
+	token, err := jwt.CreateToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create token"})
+		return
+	}
+
+	// 3. トークンを返す
 	c.JSON(http.StatusOK, gin.H{
 		"message": "login success",
-		"user_id": user.ID,
+		"token":   token,
 	})
 }
