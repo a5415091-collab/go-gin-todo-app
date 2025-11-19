@@ -11,7 +11,7 @@ type TodoService interface {
 	FindAll(userID uint) ([]model.Todo, error)
 	FindByID(userID uint, id uint) (*model.Todo, error)
 	Create(userID uint, title string) (*model.Todo, error)
-	Update(userID uint, id uint, title string, done bool) (*model.Todo, error)
+	Update(userID uint, id uint, title string, done *bool) (*model.Todo, error)
 	Delete(userID uint, id uint) error
 }
 
@@ -48,13 +48,16 @@ func (s *todoService) Create(userID uint, title string) (*model.Todo, error) {
 }
 
 // --- Update ---
-func (s *todoService) Update(userID uint, id uint, title string, done bool) (*model.Todo, error) {
+func (s *todoService) Update(userID uint, id uint, title string, done *bool) (*model.Todo, error) {
 	todo, err := s.todoRepo.FindByID(userID, id)
 	if err != nil {
 		return nil, errors.New("todo not found")
 	}
 	todo.Title = title
-	todo.Done = done
+	// Done が JSON に含まれていた場合のみ更新
+	if done != nil {
+		todo.Done = *done
+	}
 	return s.todoRepo.Update(todo)
 }
 

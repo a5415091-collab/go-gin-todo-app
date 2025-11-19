@@ -18,14 +18,14 @@ func NewAuthHandler(authService service.AuthService) *AuthHandler {
 
 // POST /signup
 func (h *AuthHandler) Signup(c *gin.Context) {
-	type Request struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+	var req struct {
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required,min=6,max=64"`
 	}
-
-	var req Request
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid email or password",
+		})
 		return
 	}
 
@@ -40,14 +40,14 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 
 // POST /login
 func (h *AuthHandler) Login(c *gin.Context) {
-	type Request struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+	var req struct {
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required,min=6,max=64"`
 	}
-
-	var req Request
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid email or password",
+		})
 		return
 	}
 

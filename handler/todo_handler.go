@@ -67,10 +67,10 @@ func (h *TodoHandler) CreateTodo(c *gin.Context) {
 	userID := userIDAny.(uint)
 
 	var req struct {
-		Title string `json:"title"`
+		Title string `json:"title" binding:"required,min=1,max=100"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "title is required and must be 1-100 characters"})
 		return
 	}
 
@@ -95,11 +95,13 @@ func (h *TodoHandler) UpdateTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	var req struct {
-		Title string `json:"title"`
-		Done  bool   `json:"done"`
+		Title string `json:"title" binding:"required,min=1,max=100"`
+		Done  *bool  `json:"done" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid request: title must be 1-100 chars and done must be true/false",
+		})
 		return
 	}
 
