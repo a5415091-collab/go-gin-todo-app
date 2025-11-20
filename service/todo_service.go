@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/a5415091-collab/go-gin-todo-app/model"
 	"github.com/a5415091-collab/go-gin-todo-app/repository"
@@ -39,6 +40,11 @@ func (s *todoService) FindByID(userID uint, id uint) (*model.Todo, error) {
 
 // --- Create ---
 func (s *todoService) Create(userID uint, title string) (*model.Todo, error) {
+
+	if strings.TrimSpace(title) == "" {
+		return nil, errors.New("title is required")
+	}
+
 	todo := &model.Todo{
 		Title:  title,
 		UserID: userID,
@@ -53,8 +59,9 @@ func (s *todoService) Update(userID uint, id uint, title string, done *bool) (*m
 	if err != nil {
 		return nil, errors.New("todo not found")
 	}
+
 	todo.Title = title
-	// Done が JSON に含まれていた場合のみ更新
+
 	if done != nil {
 		todo.Done = *done
 	}

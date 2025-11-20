@@ -49,7 +49,6 @@ func (s *authService) Login(email, password string) (*model.User, error) {
 		return nil, errors.New("invalid email or password")
 	}
 
-	// 照合
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return nil, errors.New("invalid email or password")
