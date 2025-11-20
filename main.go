@@ -7,6 +7,7 @@ import (
 
 	"github.com/a5415091-collab/go-gin-todo-app/db"
 	"github.com/a5415091-collab/go-gin-todo-app/handler"
+	"github.com/a5415091-collab/go-gin-todo-app/logger"
 	"github.com/a5415091-collab/go-gin-todo-app/middleware"
 	"github.com/a5415091-collab/go-gin-todo-app/repository"
 	"github.com/a5415091-collab/go-gin-todo-app/service"
@@ -14,6 +15,9 @@ import (
 
 func main() {
 	r := gin.Default()
+
+	// LOG 初期化
+	logger.Init()
 
 	// DB 初期化
 	db.Init()
